@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { } from 'react';
 
-const Input = () => {
-	const [value, setValue] = useState('')
+type InputProps = {
+	handleInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	name: string;
+}
+const Input = ({ handleInput, name }: InputProps) => {
 	return (
-		<input type='text' value={value}>
-
-		</input>
+		<input type='text' value={name} onChange={handleInput} />
 	);
 };
 

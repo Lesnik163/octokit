@@ -6,7 +6,13 @@ type InputProps = {
 }
 const Input = ({ handleInput, name }: InputProps) => {
 	return (
-		<input type='text' value={name} onChange={handleInput} />
+		<input
+			type='text'
+			value={name}
+			onChange={handleInput}
+			placeholder='Введите имя пользователя'
+			style={{ minWidth: '400px' }}
+		/>
 	);
 };
 

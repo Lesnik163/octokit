@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getRepos, Repo } from '../../api.ts';
+import { getRepos, PreparedRepo } from '../../api.ts';
 
 interface ReposState {
-	repositories: Repo[];
+	repositories: PreparedRepo[];
 	loading: boolean;
 	error: string | null;
 }
@@ -13,7 +13,7 @@ const initialState: ReposState = {
 	error: null,
 };
 
-export const fetchRepos = createAsyncThunk<Repo[], string>('repos/fetchRepos',
+export const fetchRepos = createAsyncThunk<PreparedRepo[], string>('repos/fetchRepos',
 	async (userName: string) => {
 		const response = await getRepos(userName);
 		return response;
@@ -32,7 +32,6 @@ const reposSlice = createSlice({
 			})
 			.addCase(fetchRepos.fulfilled, (state, action) => {
 				state.loading = false;
-				console.log(action.payload);
 				state.repositories = action.payload;
 			})
 			.addCase(fetchRepos.rejected, (state, action) => {

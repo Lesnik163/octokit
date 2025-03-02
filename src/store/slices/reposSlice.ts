@@ -3,19 +3,23 @@ import { getRepos, PreparedRepo } from '../../api.ts';
 
 interface ReposState {
 	repositories: PreparedRepo[];
+	page: number;
+	hasMore: boolean;
 	loading: boolean;
 	error: string | null;
 }
 
 const initialState: ReposState = {
 	repositories: [],
+	page: 1,
+	hasMore: true,
 	loading: false,
 	error: null,
 };
 
-export const fetchRepos = createAsyncThunk<PreparedRepo[], string>('repos/fetchRepos',
-	async (userName: string) => {
-		const response = await getRepos(userName);
+export const fetchRepos = createAsyncThunk<PreparedRepo[], { userName: string; page: number }>('repos/fetchRepos',
+	async ({ userName, page }) => {
+		const response = await getRepos(userName, page);
 		return response;
 	}
 )
@@ -23,7 +27,15 @@ export const fetchRepos = createAsyncThunk<PreparedRepo[], string>('repos/fetchR
 const reposSlice = createSlice({
 	name: 'repos',
 	initialState,
-	reducers: {},
+	reducers: {
+		resetRepos(state) {
+			state.repositories = [];
+			state.page = 1;
+			state.hasMore = true;
+			state.loading = false;
+			state.error = null;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchRepos.pending, (state) => {
@@ -32,7 +44,9 @@ const reposSlice = createSlice({
 			})
 			.addCase(fetchRepos.fulfilled, (state, action) => {
 				state.loading = false;
-				state.repositories = action.payload;
+				state.repositories = [...state.repositories, ...action.payload];
+				state.hasMore = action.payload.length > 0;
+				state.page += 1;
 			})
 			.addCase(fetchRepos.rejected, (state, action) => {
 				state.loading = false;
@@ -41,4 +55,5 @@ const reposSlice = createSlice({
 	}
 })
 const reposReducer = reposSlice.reducer;
+export const { resetRepos } = reposSlice.actions;
 export default reposReducer;

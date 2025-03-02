@@ -33,9 +33,16 @@ export const axiosInstance = axios.create({
 	},
 });
 
-const getRepos = async (userName: string) => {
+const getRepos = async (userName: string, page: number) => {
 	try {
-		const reposArray = await axios.get(`${BASE_URL}users/${userName}/repos`);
+		const reposArray = await axios.get(`${BASE_URL}users/${userName}/repos`,
+			{
+				params: {
+					per_page: 20,
+					page
+				}
+			}
+		);
 
 		const response = reposArray.data.map((repo: ServerRepo) => ({
 			id: repo.id,

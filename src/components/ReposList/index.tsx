@@ -1,20 +1,48 @@
 import { PreparedRepo } from '../../api.ts/index.ts';
-import { useSelector } from '../../store/hooks/index.ts';
+import { useDispatch, useSelector } from '../../store/hooks/index.ts';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import Paragraph from 'antd/es/typography/Paragraph';
 import { Avatar, Card, Rate } from 'antd';
+import { useCallback, useEffect } from 'react';
+import { fetchRepos } from '../../store/slices/reposSlice.ts';
 
-const ReposList = () => {
-	const { repositories, loading, error } = useSelector(state => state.repos);
+type ReposListProps = {
+	userName: string;
+	setPage: (page: number) => void;
+}
+
+const ReposList: React.FC<ReposListProps> = ({ userName, setPage }) => {
+	const { repositories, loading, error, hasMore, page } = useSelector(state => state.repos);
+	const dispatch = useDispatch();
+
+	const loadMoreRepos = useCallback(() => {
+		if (hasMore && !loading) {
+			dispatch(fetchRepos({ userName, page }));
+			setPage(page + 1)
+		}
+	}, [userName, page, hasMore, loading, dispatch]);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+			if (scrollTop + clientHeight >= scrollHeight - 300) {
+				loadMoreRepos();
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [loadMoreRepos]);
+
 	return (
 		<div>
 			{loading && <Card loading={loading} style={{ minWidth: 400 }} />}
 			{error && (
 				<div style={{ color: 'red', textAlign: 'center' }}>Попробуйте ввести другое имя</div>
 			)}
-			{repositories && repositories.length === 0 && (
+			{repositories.length === 0 && (
 				<div style={{ textAlign: 'center', padding: '20px' }}>Введите имя, чтоб получить репозитории</div>
 			)}
 			{repositories && repositories?.length > 0 &&
@@ -39,7 +67,8 @@ const ReposList = () => {
 					)
 				})
 			}
-			{!repositories && <p>У данного пользователя ещё не репозиториев</p>}
+			{!hasMore && <p>Репозиториев больше нет 🙄</p>}
+			{!repositories && <p>У данного пользователя ещё нет репозиториев 😔</p>}
 		</div>
 	)
 }

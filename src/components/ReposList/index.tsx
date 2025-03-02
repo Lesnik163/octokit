@@ -38,17 +38,17 @@ const ReposList: React.FC<ReposListProps> = ({ userName, setPage }) => {
 
 	return (
 		<div>
-			{loading && <Card loading={loading} style={{ minWidth: 400 }} />}
+			{loading && <Card loading={loading} style={{ minWidth: 260 }} />}
 			{error && (
 				<div style={{ color: 'red', textAlign: 'center' }}>Попробуйте ввести другое имя</div>
 			)}
 			{repositories.length === 0 && (
-				<div style={{ textAlign: 'center', padding: '20px' }}>Введите имя, чтоб получить репозитории</div>
+				<span style={{ textAlign: 'center' }}>Введите имя, чтоб получить репозитории</span>
 			)}
 			{repositories && repositories?.length > 0 &&
 				repositories.map((repo: PreparedRepo) => {
 					return (
-						<Card loading={loading} style={{ minWidth: 400, margin: 10 }} key={repo.id}>
+						<Card loading={loading} style={{ minWidth: 260, margin: 10 }} key={repo.id}>
 							<Card.Meta
 								avatar={<Avatar src={repo.avatar} />}
 								title={repo.name}

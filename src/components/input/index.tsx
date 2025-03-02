@@ -12,7 +12,7 @@ const Input: React.FC<InputProps> = ({ handleInput, name }) => {
 			value={name}
 			onChange={handleInput}
 			placeholder='Введите имя пользователя'
-			style={{ minWidth: '400px' }} />
+			style={{ minWidth: '300px' }} />
 	);
 };
 
